@@ -1,0 +1,51 @@
+# Tidy Tuesday Week 42
+# DinosauRus Dozen
+# @curiekphd
+
+# load packages
+
+library(tidytuesdayR)
+library(dplyr)
+library(ggplot2)
+
+# import data
+
+datasaurus <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-13/datasaurus.csv')
+
+# Background on the datasaurus data package: contains 13 sets of x-y data. Each sub-dataset has five statistics that are (almost) the same in each case. (These are the mean of x, mean of y, standard deviation of x, standard deviation of y, and Pearson correlation between x and y). However, scatter plots reveal that each sub-dataset looks very different. The dataset is intended to be used to teach students that it is important to plot their own datasets, rather than relying only on statistics.
+
+# see that stats are almost the same for each dataset
+
+datasaurus %>% 
+  group_by(dataset) %>% 
+  summarise(
+    mean_x    = mean(x),
+    mean_y    = mean(y),
+    std_dev_x = sd(x),
+    std_dev_y = sd(y),
+    corr_x_y  = cor(x, y)
+  )
+
+# plot data
+
+p <- 
+ggplot(datasaurus, aes(x=x, y=y, colour=dataset)) +
+  geom_point(show.legend = FALSE) +
+  facet_wrap(~dataset, ncol=3) +
+  labs(title = "Never Trust Summary Statistics Alone \n",
+       subtitle = "Always visualise the data",
+       caption = "@curiekphd | Source: Datasaurus Data Package") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.title.x.bottom = element_blank(),
+    strip.background = element_blank(),
+    strip.text.x = element_blank(),
+    axis.text = element_text(color = "#969696"),
+    axis.ticks = element_line(color = "#666583"),
+    plot.title = element_text(hjust = 0.5, vjust = -2, size = 20, color = "#bdbdc9", face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, vjust = 2, size = 12, color = "#bdbdc9"),
+    plot.caption = element_text(color = "#bdbdc9"),
+    panel.spacing = unit(1, "lines"))
+p
